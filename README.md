@@ -15,20 +15,6 @@ opengl/     OpenGL programs, grouped by platform:
   windows/    Windows (Win32)
 ```
 
-Topic folders follow the `NN-Name` convention and are PascalCased:
-
-- `01-*` `02-*` – windowing basics, BlueScreen
-- `03-*` – perspective, orthographic projection
-- `05-2DRotation` / `06-3DRotation` – rotations
-- `07-Texture` – texture mapping
-- `09-Light` – lighting (diffuse, per-vertex/per-fragment)
-- `10-Tessellation`, `11-GeometryShader`, `13-Interleaved`, `14-FBO`, etc.
-
-Within `opengl/{linux,windows}/02-OpenGL`:
-
-- `01-FixedFunctionPipeline` – legacy immediate-mode-style OpenGL
-- `02-ProgrammablePipeline` – shader-based OpenGL (GLSL)
-
 ## Building
 
 ### Windows – Direct3D and OpenGL
