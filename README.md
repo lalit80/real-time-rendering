@@ -13,24 +13,33 @@ opengl/
   web/                     WebGL 2 (HTML/JS)
 ```
 
-Windows and Linux split rendering into `01-FixedFunctionPipeline` (legacy immediate mode) and `02-ProgrammablePipeline` (GLSL). Topics are numbered `NN-Name` and follow a common path: windowing → BlueScreen → projections → 2D/3D rotation → textures → sphere → lighting → FBO → tessellation → geometry shaders → interleaved/indexed buffers → model loading → CUDA/OpenCL interop.
+Windows and Linux split rendering into `FixedFunctionPipeline` (legacy immediate mode) and `ProgrammablePipeline` (GLSL). The programs follow a common path: windowing → BlueScreen → projections → 2D/3D rotation → textures → sphere → lighting → FBO → tessellation → geometry shaders → interleaved/indexed buffers → model loading → CUDA/OpenCL interop.
 
 ## Direct3D (`direct3d/`)
 
 D3D11 with HLSL compiled at runtime (`vs_5_0`/`ps_5_0`/`gs_5_0`), XNA Math, DXGI swap chain, DirectXTK `WICTextureLoader`, and a prebuilt `Sphere.lib` for sphere meshes.
 
-`01-PrintDXInfo` · `02-BlueScreen` · `03-Perspective` · `04-Orthographic` · `05-2DRotation` / `05-3DRotation` · `06-Texture` · `07-Sphere` · `08-Light` · `09-Tessellation` · `10-Geometry` / `11-GeometryNew` · `12-Interleaved`
+- Device/adapter info dump to a log
+- Blue-screen window with a swap chain
+- Perspective and orthographic projections (triangles, rectangles; triangle strip vs list)
+- 2D and 3D rotation of triangles, rectangles, pyramids, and cubes
+- Texture mapping — smiley, tweaked smiley, checkerboard, on pyramid/cube
+- Sphere mesh via `DrawIndexed`
+- Full lighting progression — diffuse, per-vertex, per-pixel, vertex/pixel toggle, two lights on a pyramid, three lights on a sphere, 24-sphere grid
+- Tessellation shaders
+- Geometry shaders
+- Interleaved position/color/texcoord/normal vertex buffer
 
 ## OpenGL
 
-- **Windows** — `01-Windowing` (7 apps) + FFP (`01-…16`, incl. GLInfo, matrices, textures, lighting, teapot) + programmable (`01-…19`, incl. FBO, tessellation, geometry shaders, `.obj` model loading, CUDA/OpenCL, solar system, robotic arm).
-- **Linux** — mirrors Windows (`01-…16` FFP, `01-…15` programmable).
-- **macOS** — `01-Windowing` (7 apps) + shader-based `01-…13`.
-- **Android** — windowing apps `01-…06` + `OpenGL-ES` `01-…14` (Gradle).
-- **iOS** — Xcode projects, ES 3.0: `01-…11`.
-- **Web** — HTML/JS WebGL 2: `01-…12`.
+- **Windows** — Win32 windowing (message loop, fullscreen, custom icon, log file). Fixed-function: GL driver info, ortho/perspective, 2D/3D rotation, matrix loading and matrix stacks (solar system, robotic arm), depth buffering, textures, lighting templates plus diffuse/Gouraud/two-light/spot-light/24-sphere material demos, special effects, Utah teapot. Programmable: GLSL ortho/perspective, rotations, textures, sphere, full lighting progression, FBO render-to-texture, tessellation shaders, geometry shaders, interleaved buffers, indexed drawing, `.obj` model loading (Suzanne), CUDA/OpenCL buffer sharing, graph paper, solar system, robotic arm.
+- **Linux** — same fixed-function and programmable content as Windows, on X11.
+- **macOS** — Cocoa windowing (events, fullscreen, custom view) + shader-based BlueScreen, projections, rotations, textures, sphere, lighting, FBO, tessellation, geometry shaders, interleaved buffers, indexed drawing.
+- **Android** — windowing apps (template, fullscreen, landscape, events) + OpenGL ES: BlueScreen → textures → sphere → lighting → FBO, tessellation/geometry shaders, interleaved, indexed drawing (Gradle).
+- **iOS** — Xcode projects, ES 3.0: BlueScreen → projections/rotations → textures → sphere → lighting → FBO → interleaved → indexed drawing.
+- **Web** — HTML/JS WebGL 2: BlueScreen → projections/rotations → textures → sphere → lighting → interleaved → indexed drawing → FBO.
 
-Lighting progresses uniformly everywhere: Diffuse → per-vertex → per-fragment/pixel → PV/PF toggle → 2 lights on pyramid → 3 lights on sphere → 24 spheres.
+Lighting progresses uniformly everywhere: Diffuse → per-vertex → per-fragment/pixel → vertex/fragment toggle → two lights on a pyramid → three lights on a sphere → 24 spheres.
 
 ## Building
 
@@ -44,5 +53,4 @@ Lighting progresses uniformly everywhere: Diffuse → per-vertex → per-fragmen
 ## Notes
 
 - Build artifacts/IDE caches are gitignored; only source, shaders, textures, and prebuilt `.lib`/`.h` deps are tracked. The `assignments/` folder is local-only.
-- Topic numbering isn't consistent across platforms; each platform folder is self-contained.
 - Many projects include a screenshot/screen recording of expected output.
