@@ -1,0 +1,121 @@
+/*
+    KaUniform[0] = glGetUniformLocation(shaderProgramObject_PF, "uKa[0]");
+    KdUniform[0] = glGetUniformLocation(shaderProgramObject_PF, "uKd[0]");
+    KsUniform[0] = glGetUniformLocation(shaderProgramObject_PF, "uKs[0]");
+    materialShininessUniform[0] = glGetUniformLocation(shaderProgramObject_PF, "uMaterialSininess[0]");
+
+    KaUniform[1] = glGetUniformLocation(shaderProgramObject_PF, "uKa[1]");
+    KdUniform[1] = glGetUniformLocation(shaderProgramObject_PF, "uKd[1]");
+    KsUniform[1] = glGetUniformLocation(shaderProgramObject_PF, "uKs[1]");
+    materialShininessUniform[1] = glGetUniformLocation(shaderProgramObject_PF, "uMaterialSininess[1]");
+
+    KaUniform[2] = glGetUniformLocation(shaderProgramObject_PF, "uKa[2]");
+    KdUniform[2] = glGetUniformLocation(shaderProgramObject_PF, "uKd[2]");
+    KsUniform[2] = glGetUniformLocation(shaderProgramObject_PF, "uKs[2]");
+    materialShininessUniform[2] = glGetUniformLocation(shaderProgramObject_PF, "uMaterialSininess[2]");
+
+    KaUniform[3] = glGetUniformLocation(shaderProgramObject_PF, "uKa[3]");
+    KdUniform[3] = glGetUniformLocation(shaderProgramObject_PF, "uKd[3]");
+    KsUniform[3] = glGetUniformLocation(shaderProgramObject_PF, "uKs[3]");
+    materialShininessUniform[3] = glGetUniformLocation(shaderProgramObject_PF, "uMaterialSininess[3]");
+
+    KaUniform[4] = glGetUniformLocation(shaderProgramObject_PF, "uKa[4]");
+    KdUniform[4] = glGetUniformLocation(shaderProgramObject_PF, "uKd[4]");
+    KsUniform[4] = glGetUniformLocation(shaderProgramObject_PF, "uKs[4]");
+    materialShininessUniform[4] = glGetUniformLocation(shaderProgramObject_PF, "uMaterialSininess[4]");
+
+    KaUniform[5] = glGetUniformLocation(shaderProgramObject_PF, "uKa[5]");
+    KdUniform[5] = glGetUniformLocation(shaderProgramObject_PF, "uKd[5]");
+    KsUniform[5] = glGetUniformLocation(shaderProgramObject_PF, "uKs[5]");
+    materialShininessUniform[5] = glGetUniformLocation(shaderProgramObject_PF, "uMaterialSininess[5]");
+
+    KaUniform[6] = glGetUniformLocation(shaderProgramObject_PF, "uKa[6]");
+    KdUniform[6] = glGetUniformLocation(shaderProgramObject_PF, "uKd[6]");
+    KsUniform[6] = glGetUniformLocation(shaderProgramObject_PF, "uKs[6]");
+    materialShininessUniform[6] = glGetUniformLocation(shaderProgramObject_PF, "uMaterialSininess[6]");
+
+    KaUniform[7] = glGetUniformLocation(shaderProgramObject_PF, "uKa[7]");
+    KdUniform[7] = glGetUniformLocation(shaderProgramObject_PF, "uKd[7]");
+    KsUniform[7] = glGetUniformLocation(shaderProgramObject_PF, "uKs[7]");
+    materialShininessUniform[7] = glGetUniformLocation(shaderProgramObject_PF, "uMaterialSininess70]");
+
+    KaUniform[8] = glGetUniformLocation(shaderProgramObject_PF, "uKa[8]");
+    KdUniform[8] = glGetUniformLocation(shaderProgramObject_PF, "uKd[8]");
+    KsUniform[8] = glGetUniformLocation(shaderProgramObject_PF, "uKs[8]");
+    materialShininessUniform[8] = glGetUniformLocation(shaderProgramObject_PF, "uMaterialSininess[8]");
+
+    KaUniform[9] = glGetUniformLocation(shaderProgramObject_PF, "uKa[9]");
+    KdUniform[9] = glGetUniformLocation(shaderProgramObject_PF, "uKd[9]");
+    KsUniform[9] = glGetUniformLocation(shaderProgramObject_PF, "uKs[9]");
+    materialShininessUniform[9] = glGetUniformLocation(shaderProgramObject_PF, "uMaterialSininess[9]");
+
+    KaUniform[10] = glGetUniformLocation(shaderProgramObject_PF, "uKa[10]");
+    KdUniform[10] = glGetUniformLocation(shaderProgramObject_PF, "uKd[10]");
+    KsUniform[10] = glGetUniformLocation(shaderProgramObject_PF, "uKs[10]");
+    materialShininessUniform[10] = glGetUniformLocation(shaderProgramObject_PF, "uMaterialSininess[10]");
+
+    KaUniform[11] = glGetUniformLocation(shaderProgramObject_PF, "uKa[11]");
+    KdUniform[11] = glGetUniformLocation(shaderProgramObject_PF, "uKd[11]");
+    KsUniform[11] = glGetUniformLocation(shaderProgramObject_PF, "uKs[11]");
+    materialShininessUniform[11] = glGetUniformLocation(shaderProgramObject_PF, "uMaterialSininess[11]");
+
+    KaUniform[12] = glGetUniformLocation(shaderProgramObject_PF, "uKa[12]");
+    KdUniform[12] = glGetUniformLocation(shaderProgramObject_PF, "uKd[12]");
+    KsUniform[12] = glGetUniformLocation(shaderProgramObject_PF, "uKs[12]");
+    materialShininessUniform[12] = glGetUniformLocation(shaderProgramObject_PF, "uMaterialSininess[12]");
+
+    KaUniform[13] = glGetUniformLocation(shaderProgramObject_PF, "uKa[13]");
+    KdUniform[13] = glGetUniformLocation(shaderProgramObject_PF, "uKd[13]");
+    KsUniform[13] = glGetUniformLocation(shaderProgramObject_PF, "uKs[13]");
+    materialShininessUniform[13] = glGetUniformLocation(shaderProgramObject_PF, "uMaterialSininess[13]");
+
+    KaUniform[14] = glGetUniformLocation(shaderProgramObject_PF, "uKa[14]");
+    KdUniform[14] = glGetUniformLocation(shaderProgramObject_PF, "uKd[14]");
+    KsUniform[14] = glGetUniformLocation(shaderProgramObject_PF, "uKs[14]");
+    materialShininessUniform[14] = glGetUniformLocation(shaderProgramObject_PF, "uMaterialSininess[14]");
+
+    KaUniform[15] = glGetUniformLocation(shaderProgramObject_PF, "uKa[15]");
+    KdUniform[15] = glGetUniformLocation(shaderProgramObject_PF, "uKd[15]");
+    KsUniform[15] = glGetUniformLocation(shaderProgramObject_PF, "uKs[15]");
+    materialShininessUniform[15] = glGetUniformLocation(shaderProgramObject_PF, "uMaterialSininess[15]");
+
+    KaUniform[16] = glGetUniformLocation(shaderProgramObject_PF, "uKa[16]");
+    KdUniform[16] = glGetUniformLocation(shaderProgramObject_PF, "uKd[16]");
+    KsUniform[16] = glGetUniformLocation(shaderProgramObject_PF, "uKs[16]");
+    materialShininessUniform[16] = glGetUniformLocation(shaderProgramObject_PF, "uMaterialSininess[16]");
+
+    KaUniform[17] = glGetUniformLocation(shaderProgramObject_PF, "uKa[17]");
+    KdUniform[17] = glGetUniformLocation(shaderProgramObject_PF, "uKd[17]");
+    KsUniform[17] = glGetUniformLocation(shaderProgramObject_PF, "uKs[17]");
+    materialShininessUniform[17] = glGetUniformLocation(shaderProgramObject_PF, "uMaterialSininess[17]");
+
+    KaUniform[18] = glGetUniformLocation(shaderProgramObject_PF, "uKa[18]");
+    KdUniform[18] = glGetUniformLocation(shaderProgramObject_PF, "uKd[18]");
+    KsUniform[18] = glGetUniformLocation(shaderProgramObject_PF, "uKs[18]");
+    materialShininessUniform[18] = glGetUniformLocation(shaderProgramObject_PF, "uMaterialSininess[18]");
+
+    KaUniform[19] = glGetUniformLocation(shaderProgramObject_PF, "uKa[19]");
+    KdUniform[19] = glGetUniformLocation(shaderProgramObject_PF, "uKd[19]");
+    KsUniform[19] = glGetUniformLocation(shaderProgramObject_PF, "uKs[19]");
+    materialShininessUniform[19] = glGetUniformLocation(shaderProgramObject_PF, "uMaterialSininess[19]");
+
+    KaUniform[20] = glGetUniformLocation(shaderProgramObject_PF, "uKa[20]");
+    KdUniform[20] = glGetUniformLocation(shaderProgramObject_PF, "uKd[20]");
+    KsUniform[20] = glGetUniformLocation(shaderProgramObject_PF, "uKs[20]");
+    materialShininessUniform[20] = glGetUniformLocation(shaderProgramObject_PF, "uMaterialSininess[20]");
+
+    KaUniform[21] = glGetUniformLocation(shaderProgramObject_PF, "uKa[21]");
+    KdUniform[21] = glGetUniformLocation(shaderProgramObject_PF, "uKd[21]");
+    KsUniform[21] = glGetUniformLocation(shaderProgramObject_PF, "uKs[21]");
+    materialShininessUniform[21] = glGetUniformLocation(shaderProgramObject_PF, "uMaterialSininess[21]");
+
+    KaUniform[22] = glGetUniformLocation(shaderProgramObject_PF, "uKa[22]");
+    KdUniform[22] = glGetUniformLocation(shaderProgramObject_PF, "uKd[22]");
+    KsUniform[22] = glGetUniformLocation(shaderProgramObject_PF, "uKs[22]");
+    materialShininessUniform[22] = glGetUniformLocation(shaderProgramObject_PF, "uMaterialSininess[22]");
+
+    KaUniform[23] = glGetUniformLocation(shaderProgramObject_PF, "uKa[23]");
+    KdUniform[23] = glGetUniformLocation(shaderProgramObject_PF, "uKd[23]");
+    KsUniform[23] = glGetUniformLocation(shaderProgramObject_PF, "uKs[23]");
+    materialShininessUniform[23] = glGetUniformLocation(shaderProgramObject_PF, "uMaterialSininess[23]");*/
+    

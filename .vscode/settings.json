@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "xkblib.h": "c",
+        "xlib.h": "c",
+        "stdio.h": "c",
+        "glx.h": "c"
+    }
+}

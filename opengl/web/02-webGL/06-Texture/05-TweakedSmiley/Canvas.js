@@ -1,0 +1,507 @@
+var canvas = null;
+var gl = null;
+var bFullScreen = false;
+var canvas_original_width = 0;
+var canvas_original_height = 0;
+var requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
+
+// webGL related variables
+const MyAttributes = {
+    LRC_ATTRIBUTE_POSITION: 0,
+    LRC_ATTRIBUTE_COLOR: 1,
+    LRC_ATTRIBUTE_NORMAL: 2,
+    LRC_ATTRIBUTE_TEXCOORD: 3,
+};
+
+var tex_smiley = null;
+var keyPress = 0;
+
+var shaderProgramObject = null;
+var vao_cube = null;
+var vbo_position_cube = null;
+var vbo_texcord_cube = null;
+var vao = null;
+var vbo_position = null;
+var vbo_texcord = null;
+var cube_angle = 0.0;
+var triangle_angle = 0.0;
+
+var mvpUniform = null;
+var textureSamplerUniform = null;
+var keyPressUniform = null;
+var perspectiveProjectionMatrix = null;
+
+function main() {
+    // get canvas
+    canvas = document.getElementById("lrc");
+    if (canvas == null) console.log("Canvas element cannot be obtained\n");
+    else console.log("Canvas element succesfully obtained\n");
+
+    canvas_original_width = canvas.width;
+    canvas_original_height = canvas.height;
+
+    // register our callback functions as event listeners
+    window.addEventListener("keydown", keyDown, false);
+    window.addEventListener("click", mouseDown, false);
+    window.addEventListener("resize", resize, false);
+
+    // initialize WebGL
+    initialize();
+    resize();
+    display();
+}
+
+function initialize() {
+    // get 2D context form canvas
+    gl = canvas.getContext("webgl2");
+    if (gl == null) console.log("webGl2 Context element cannot be obtained\n");
+    else console.log("webGl2 Context element succesfully obtained\n");
+
+    // set viewport width and height
+    gl.viewportWidth = canvas.width;
+    gl.viewportHeight = canvas.height;
+
+    // vertex shader
+    var vertexShaderObject = gl.createShader(gl.VERTEX_SHADER);
+    var vertexShaderSourceCode = 
+            "#version 300 es \n"+
+            "in vec4 aPosition; \n"+
+            "in vec2 aTexCoord; \n"+
+            "out vec2 out_texcoord; \n"+
+            "uniform mat4 uMVPMatrix; \n"+
+            "void main(void) \n"+
+            "{ \n"+
+            "   gl_Position = uMVPMatrix * aPosition; \n"+
+            "   out_texcoord = aTexCoord; \n"+
+            "} \n";
+    gl.shaderSource(vertexShaderObject, vertexShaderSourceCode);
+    gl.compileShader(vertexShaderObject);
+    if (gl.getShaderParameter(vertexShaderObject, gl.COMPILE_STATUS) == false) {
+        var error = gl.getShaderInfoLog(vertexShaderObject);
+        if (error.length > 0) {
+            alert("Vertex Shader Compilation Error: " + error);
+            uninitialize();
+        }
+    }
+
+    // fragment shader
+    var fragmentShaderObject = gl.createShader(gl.FRAGMENT_SHADER);
+    var fragmentShaderSourceCode = 
+            "#version 300 es \n"+
+            "precision highp float; \n"+
+            "out vec4 FragColor; \n"+
+            "in vec2 out_texcoord; \n"+
+            "uniform sampler2D uTextureSampler; \n"+
+            "uniform int ukeyPress; \n"+ 
+            "void main(void) \n"+
+            "{ \n"+
+            "   if (ukeyPress != 1 && ukeyPress != 2 && ukeyPress != 3 && ukeyPress != 4) { \n"+
+            "       FragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f); \n"+
+            "   } else { \n"+
+            "       FragColor = texture(uTextureSampler, out_texcoord); \n"+
+            "   } \n"+
+            "} \n";
+    gl.shaderSource(fragmentShaderObject, fragmentShaderSourceCode);
+    gl.compileShader(fragmentShaderObject);
+    if (gl.getShaderParameter(fragmentShaderObject, gl.COMPILE_STATUS) == false) {
+        var error = gl.getShaderInfoLog(fragmentShaderObject);
+        if (error.length > 0) {
+            alert("Fragment Shader Compilation Error: " + error);
+            uninitialize();
+        }   
+    } else {
+        console.log("Fragment Shader Compilation Successful.\n");
+    }
+
+    // shader program
+    shaderProgramObject = gl.createProgram();
+    gl.attachShader(shaderProgramObject, vertexShaderObject);
+    gl.attachShader(shaderProgramObject, fragmentShaderObject);
+    gl.bindAttribLocation(shaderProgramObject, MyAttributes.LRC_ATTRIBUTE_POSITION, "aPosition");
+    gl.bindAttribLocation(shaderProgramObject, MyAttributes.LRC_ATTRIBUTE_TEXCOORD, "aTexCoord");
+    gl.linkProgram(shaderProgramObject);
+    if (gl.getProgramParameter(shaderProgramObject, gl.LINK_STATUS) == false) {
+        var error = gl.getProgramInfoLog(shaderProgramObject);  
+        if (error.length > 0) {
+            alert("Shader Program Linking Error: " + error);
+            uninitialize();
+        }
+    } else {
+        console.log("Shader Program Linking Successful.\n");
+    }
+
+    // get uniform locations
+    mvpUniform = gl.getUniformLocation(shaderProgramObject, "uMVPMatrix");
+    textureSamplerUniform = gl.getUniformLocation(shaderProgramObject, "uTextureSampler");
+    keyPressUniform = gl.getUniformLocation(shaderProgramObject, "ukeyPress");
+
+    // cube position, color, vao_cube, vbo
+    var cube_position = new Float32Array([
+        // front
+        1.0,  1.0,  1.0, // top-right of front
+        -1.0,  1.0,  1.0, // top-left of front
+        -1.0, -1.0,  1.0, // bottom-left of front
+        1.0, -1.0,  1.0, // bottom-right of front
+
+        // right
+        1.0,  1.0, -1.0, // top-right of right
+        1.0,  1.0,  1.0, // top-left of right
+        1.0, -1.0,  1.0, // bottom-left of right
+        1.0, -1.0, -1.0, // bottom-right of right
+
+        // back
+        1.0,  1.0, -1.0, // top-right of back
+        -1.0,  1.0, -1.0, // top-left of back
+        -1.0, -1.0, -1.0, // bottom-left of back
+        1.0, -1.0, -1.0, // bottom-right of back
+
+        // left
+        -1.0,  1.0,  1.0, // top-right of left
+        -1.0,  1.0, -1.0, // top-left of left
+        -1.0, -1.0, -1.0, // bottom-left of left
+        -1.0, -1.0,  1.0, // bottom-right of left
+
+        // top
+        1.0,  1.0, -1.0, // top-right of top
+        -1.0,  1.0, -1.0, // top-left of top
+        -1.0,  1.0,  1.0, // bottom-left of top
+        1.0,  1.0,  1.0, // bottom-right of top
+
+        // bottom
+        1.0, -1.0,  1.0, // top-right of bottom
+        -1.0, -1.0,  1.0, // top-left of bottom
+        -1.0, -1.0, -1.0, // bottom-left of bottom
+        1.0, -1.0, -1.0, // bottom-right of bottom
+    ]);
+
+    var cube_texcord = new Float32Array([
+        // front
+        1.0, 1.0, // top-right of front
+        0.0, 1.0, // top-left of front
+        0.0, 0.0, // bottom-left of front
+        1.0, 0.0, // bottom-right of front
+
+        // right
+        1.0, 1.0, // top-right of right
+        0.0, 1.0, // top-left of right
+        0.0, 0.0, // bottom-left of right
+        1.0, 0.0, // bottom-right of right
+
+        // back
+        1.0, 1.0, // top-right of back
+        0.0, 1.0, // top-left of back
+        0.0, 0.0, // bottom-left of back
+        1.0, 0.0, // bottom-right of back
+
+        // left
+        1.0, 1.0, // top-right of left
+        0.0, 1.0, // top-left of left
+        0.0, 0.0, // bottom-left of left
+        1.0, 0.0, // bottom-right of left
+
+        // top
+        1.0, 1.0, // top-right of top
+        0.0, 1.0, // top-left of top
+        0.0, 0.0, // bottom-left of top
+        1.0, 0.0, // bottom-right of top
+
+        // bottom
+        1.0, 1.0, // top-right of bottom
+        0.0, 1.0, // top-left of bottom
+        0.0, 0.0, // bottom-left of bottom
+        1.0, 0.0, // bottom-right of bottom
+    ]);
+
+    // triangle position, color, vao, vbo
+    var traingle_position = new Float32Array([
+         // front
+        0.0,  1.0,  0.0, // front-top
+        -1.0, -1.0,  1.0, // front-left
+        1.0, -1.0,  1.0, // front-right
+        
+        // right
+        0.0,  1.0,  0.0, // right-top
+        1.0, -1.0,  1.0, // right-left
+        1.0, -1.0, -1.0, // right-right
+
+        // back
+        0.0,  1.0,  0.0, // back-top
+        1.0, -1.0, -1.0, // back-left
+        -1.0, -1.0, -1.0, // back-right
+
+        // left
+        0.0,  1.0,  0.0, // left-top
+        -1.0, -1.0, -1.0, // left-left
+        -1.0, -1.0,  1.0, // left-right
+    ]);
+    var triangle_texcord = new Float32Array([
+        // front
+        0.5, 1.0, // front-top
+        0.0, 0.0, // front-left
+        1.0, 0.0, // front-right
+
+        // right
+        0.5, 1.0, // right-top
+        1.0, 0.0, // right-left
+        0.0, 0.0, // right-right
+
+        // back
+        0.5, 1.0, // back-top
+        0.0, 0.0, // back-left
+        1.0, 0.0, // back-right
+
+        // left
+        0.5, 1.0, // left-top
+        1.0, 0.0, // left-left
+        0.0, 0.0, // left-right
+    ]);
+    
+    vao_cube = gl.createVertexArray();
+    gl.bindVertexArray(vao_cube);
+
+    vbo_position_cube = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_position_cube);
+    gl.bufferData(gl.ARRAY_BUFFER, cube_position, gl.STATIC_DRAW);
+    gl.vertexAttribPointer(MyAttributes.LRC_ATTRIBUTE_POSITION, 3, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(MyAttributes.LRC_ATTRIBUTE_POSITION);
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+    vbo_texcord_cube = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_texcord_cube);
+    gl.bufferData(gl.ARRAY_BUFFER, cube_texcord, gl.DYNAMIC_DRAW);
+    gl.vertexAttribPointer(MyAttributes.LRC_ATTRIBUTE_TEXCOORD, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(MyAttributes.LRC_ATTRIBUTE_TEXCOORD);
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+    
+    gl.bindVertexArray(null);
+
+    vao = gl.createVertexArray();
+    gl.bindVertexArray(vao);
+
+    vbo_position = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_position);
+    gl.bufferData(gl.ARRAY_BUFFER, traingle_position, gl.STATIC_DRAW);
+    gl.vertexAttribPointer(MyAttributes.LRC_ATTRIBUTE_POSITION, 3, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(MyAttributes.LRC_ATTRIBUTE_POSITION);
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+    vbo_texcord = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_texcord);
+    gl.bufferData(gl.ARRAY_BUFFER, triangle_texcord, gl.STATIC_DRAW);
+    gl.vertexAttribPointer(MyAttributes.LRC_ATTRIBUTE_TEXCOORD, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(MyAttributes.LRC_ATTRIBUTE_TEXCOORD);
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+    
+    gl.bindVertexArray(null);
+
+    // enable depth
+    gl.clearDepth(1.0);
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.LEQUAL);
+
+    perspectiveProjectionMatrix = mat4.create();
+
+    // set clear color
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+    // load textures
+    tex_smiley = loadGLTexture("smiley.png");
+}
+
+function display() {
+    // clear the color buffer
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.useProgram(shaderProgramObject);
+
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, tex_smiley);
+    gl.uniform1i(textureSamplerUniform, 0);
+
+    var current_texcord = new Float32Array([
+        1.0, 1.0, 
+        0.0, 1.0, 
+        0.0, 0.0, 
+        1.0, 0.0
+    ]); // Default texture coordinates for keyPRess 0
+    
+    gl.uniform1i(keyPressUniform, keyPress);
+
+    if (keyPress == 1) {
+        current_texcord = new Float32Array([
+                0.5, 0.5,
+                0.0, 0.5,
+                0.0, 0.0,
+                0.5, 0.0
+            ]);
+    } else if (keyPress == 2) {
+        current_texcord = new Float32Array([
+                2.0, 2.0,
+                0.0, 2.0,
+                0.0, 0.0,
+                2.0, 0.0
+            ]);
+    } else if (keyPress == 3) {
+        current_texcord = new Float32Array([
+                1.0, 1.0,
+                0.0, 1.0,
+                0.0, 0.0,
+                1.0, 0.0
+            ]);
+    }  else if (keyPress == 4) {
+        current_texcord = new Float32Array([
+                0.5, 0.5,
+                0.5, 0.5,
+                0.5, 0.5,
+                0.5, 0.5
+            ]);
+    }
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, vbo_texcord_cube);
+    gl.bufferData(gl.ARRAY_BUFFER, current_texcord, gl.DYNAMIC_DRAW);
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+    var modelViewMatrix = mat4.create();
+    var translationMatrix = mat4.create();
+    var modelViewProjectionMatrix = mat4.create();
+    var rotationMatrix = mat4.create();
+    mat4.rotateY(rotationMatrix, rotationMatrix, glMatrix.toRadian(cube_angle));
+    mat4.translate(translationMatrix, translationMatrix, [0.0, 0.0, -6.0]);
+    mat4.multiply(modelViewMatrix, translationMatrix, rotationMatrix);
+    mat4.multiply(modelViewProjectionMatrix, perspectiveProjectionMatrix, modelViewMatrix);
+    gl.uniformMatrix4fv(mvpUniform, false, modelViewProjectionMatrix);
+    
+    gl.bindVertexArray(vao_cube);
+    gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+    gl.bindVertexArray(null);
+
+    gl.useProgram(null);
+
+    update();
+    // double buffering using requestAnimationFrame
+    requestAnimationFrame(display, canvas);
+}
+
+function update() {
+}
+
+function resize() {
+    if (bFullScreen == true) {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    } else {
+        canvas.width = canvas_original_width;
+        canvas.height = canvas_original_height;
+    }
+
+    // set the viewport to match the new canvas dimensions
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    mat4.perspective(perspectiveProjectionMatrix, 45.0, parseFloat(canvas.width) / parseFloat(canvas.height), 0.1, 100.0);
+}
+
+function uninitialize() {
+    if (bFullScreen == true)
+        toggleFullScreen();
+    if (vbo_position_cube) {
+        gl.deleteBuffer(vbo_position_cube);
+        vbo_position_cube = null;
+    }
+    if (vbo_texcord_cube) {
+        gl.deleteBuffer(vbo_texcord_cube);
+        vbo_texcord_cube = null;
+    }
+    if (vao_cube) {
+        gl.deleteVertexArray(vao_cube);
+        vao_cube = null;
+    }
+    if (shaderProgramObject) {
+        gl.useProgram(shaderProgramObject);
+        var shaderObjects = gl.getAttachedShaders(shaderProgramObject);
+        for (let i = 0; i < shaderObjects.length; i++) {
+            gl.detachShader(shaderProgramObject, shaderObjects[i]);
+            gl.deleteShader(shaderObjects[i]);
+            shaderObjects[i] = null;
+        }
+        gl.useProgram(null);
+        gl.deleteProgram(shaderProgramObject);
+        shaderProgramObject = null;
+    }
+}
+
+function keyDown(event) {
+    switch (event.keyCode) {
+        case 70:    // for 'F' or 'f'
+        case 102:
+            if (bFullScreen == false) {
+                toggleFullScreen();
+                bFullScreen = true;
+            } else {
+                toggleFullScreen();
+                bFullScreen = false;
+            }
+            break;
+
+        case 27:    // Escape
+            uninitialize();
+            window.close();
+            break;
+        
+        case 49:    // '1'
+            keyPress = 1;
+            break;
+
+        case 50:    // '2'
+            keyPress = 2;
+            break;
+
+        case 51:    // '3'
+            keyPress = 3;
+            break;
+
+        case 52:    // '4'
+            keyPress = 4;
+            break;
+            
+        default:
+            keyPress = 0;
+            break;
+    }
+}
+
+function mouseDown() {}
+
+function toggleFullScreen() {
+    var fullscreen_element =    document.fullscreenElement ||
+                                document.mozFullScreenElement ||
+                                document.webkitFullscreenElement ||
+                                document.msFullscreenElement ||
+                                null;
+    
+    if (fullscreen_element == null) {
+        if (canvas.requestFullscreen) canvas.requestFullscreen();
+        else if (canvas.mozRequestFullScreen) canvas.mozRequestFullScreen();
+        else if (canvas.webkitRequestFullscreen) canvas.webkitRequestFullscreen();
+        else if (canvas.msRequestFullscreen) canvas.msRequestFullscreen();
+    }
+    else {
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.mozExitFullScreen) document.mozExitFullScreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        else if (document.msExitFullscreen) document.msExitFullscreen();
+    }
+}
+
+function loadGLTexture(imageFileName) {
+    var tex = gl.createTexture();
+    tex.image = new Image();
+    tex.image.src = imageFileName;
+    tex.image.onload = function () {
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+        gl.bindTexture(gl.TEXTURE_2D, tex);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);                      // gl.nearest
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, tex.image);
+        gl.generateMipmap(gl.TEXTURE_2D);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+    }
+    return tex;
+}

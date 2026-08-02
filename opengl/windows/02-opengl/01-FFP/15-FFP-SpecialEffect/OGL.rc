@@ -1,0 +1,6 @@
+#include "OGL.h"
+
+MYICON ICON lrc.ico
+
+IDBITMAP_MARBLE BITMAP marble.bmp
+

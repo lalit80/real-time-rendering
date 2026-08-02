@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+    <!-- Head -->
+    <head>
+        <meta charset="UTF-8" />
+        <title> LRC: Canvas </title>
+        <style>
+            /* Make the page background dark gray */
+            body {
+                background-color: #222;
+                margin: 0;
+                height: 100vh;
+                display: flex;
+                justify-content: center; /* horizontal center */
+                align-items: center;     /* vertical center */
+            }
+
+            /* Optional: add border and shadow to the canvas */
+            canvas {
+                border: 2px solid #444;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            }
+        </style>
+    </head>
+
+    <!-- Body-->
+    <body onload="main()">
+        <canvas id="lrc" width="800" height="600">
+            This browser doensn't support HTML 5 Canvas Element
+        </canvas>
+        <script src="Canvas.js"></script>
+    </body>
+</html>

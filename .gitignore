@@ -1,0 +1,44 @@
+# OS
+.DS_Store
+*.DS_STORE
+
+# Build tool directories
+assignments/
+.gradle/
+build/
+Debug/
+Release/
+.vs/
+.idea/
+xcuserdata/
+out/
+intermediates/
+dex/
+merged_res/
+
+# Build artifacts
+*.exe
+*.obj
+*.pdb
+*.ilk
+*.o
+*.a
+*.so
+*.dylib
+*.class
+*.dex
+*.apk
+*.bin
+*.ser
+*.flat
+Log.txt
+*.pdf
+
+# Third-party jars (keep only gradle wrapper)
+*.jar
+!**/gradle/wrapper/gradle-wrapper.jar
+
+# Personal notes
+**/changes
+**/notes
+**/notes.txt

@@ -1,0 +1,35 @@
+ortho :
+	1 change ortho function
+	Matrix.orthoM(orthomatrix, 0, rest 6 param);  1
+
+
+3D:
+for scale Matrix.scaleM(scalematrix , 0, 3p)
+	Matrix.setRotateM(mat, 0, angle, 3p)
+
+texture:
+png images convert bmp to png
+flip image vertically
+store in res folder. create new folder raw in res
+variable to array |a| = 1
+load GLTexture t.java
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
